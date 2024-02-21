@@ -23,3 +23,5 @@ export type InitialState<T> = {
   isLoading: boolean;
   error: string | null;
 };
+
+export type ObjectDefault = { [id: string]: string | number | boolean };

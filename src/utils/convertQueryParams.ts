@@ -1,4 +1,6 @@
-const convertQueryParams = (body: { [id: string]: string }) => {
+import { ObjectDefault } from "../types/types.ts";
+
+const convertQueryParams = (body: ObjectDefault) => {
   return (
     "?" +
     Object.keys(body)

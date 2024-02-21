@@ -4,7 +4,8 @@ const apiEndpoint = "https://example.com:8080/api/v1/";
 
 axios.defaults.withCredentials = true;
 const axiosInstance = axios.create({
-  baseURL: apiEndpoint
+  baseURL: apiEndpoint,
+  timeout: 1
 });
 
 axiosInstance.interceptors.response.use(

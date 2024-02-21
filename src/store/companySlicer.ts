@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import companyList from "../mock/companyList.json";
 import isDev from "../utils/isDev.ts";
-import { Company, Employee, InitialState, Request, UpdatedFieldsCompany } from "../types/types.ts";
+import { Company, Employee, InitialState, Request, UpdatedItemData } from "../types/types.ts";
 import companyService from "../services/company.services.ts";
 
 type InitialStateCompany = InitialState<Company[]>;
@@ -24,11 +24,9 @@ export const requestCompanyList = createAsyncThunk("companyList/request", async 
   }
 });
 
-type UpdatedCompanyData = Omit<Partial<Company>, "id"> & Pick<Company, "id"> & UpdatedFieldsCompany;
-
 export const updateCompany = createAsyncThunk(
   "company/update",
-  async (payload: UpdatedCompanyData, { rejectWithValue }) => {
+  async (payload: UpdatedItemData<Company>, { rejectWithValue }) => {
     try {
       const { result } = (await companyService.patch({ payload })) as Request<Employee>;
       if (result.status === "200") return result.data;

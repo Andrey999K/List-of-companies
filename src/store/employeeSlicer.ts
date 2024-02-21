@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import employeeList from "../mock/employeeList.json";
 import isDev from "../utils/isDev.ts";
-import { Employee, InitialState, Request } from "../types/types.ts";
+import { Employee, InitialState, Request, UpdatedItemData } from "../types/types.ts";
 import employeeService from "../services/employee.services.ts";
+import companyService from "../services/company.services.ts";
 
 type InitialStateEmployee = InitialState<Employee[]>;
 
@@ -20,7 +21,7 @@ export const requestEmployeeList = createAsyncThunk(
   async (payload: queryParamsGetEmployee | null, { rejectWithValue }) => {
     try {
       const data = payload ? await employeeService.get(payload) : await employeeService.get();
-      const { result } = data as Request<Employee[] | Employee>;
+      const { result } = data;
       if (result.status === "200") return result?.data;
       return [];
     } catch (error: any) {
@@ -40,10 +41,27 @@ export const requestEmployeeList = createAsyncThunk(
   }
 );
 
-export const deleteEmployee = createAsyncThunk("employeeList/delete", async (payload: number, { rejectWithValue }) => {
+export const updateEmployee = createAsyncThunk(
+  "employee/update",
+  async (payload: UpdatedItemData<Employee>, { rejectWithValue }) => {
+    try {
+      const { result } = (await companyService.patch({ payload })) as Request<Employee>;
+      if (result.status === "200") return result.data;
+      return null;
+    } catch (error: any) {
+      if (isDev()) {
+        console.log(error);
+        return payload;
+      }
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const deleteEmployee = createAsyncThunk("employee/delete", async (payload: number, { rejectWithValue }) => {
   try {
     const data = payload ? await employeeService.delete({ employeeId: payload }) : await employeeService.get();
-    const { result } = data as Request<Employee>;
+    const { result } = data;
     if (result.status === "200") return result.data?.id;
   } catch (error: any) {
     if (isDev()) {
@@ -82,6 +100,16 @@ const employeeSlice = createSlice({
       if (payload) state.entities = Array.isArray(payload) ? payload : [payload];
     });
     builder.addCase(requestEmployeeList.rejected, setRejected);
+    builder.addCase(updateEmployee.pending, setPending);
+    builder.addCase(updateEmployee.fulfilled, (state: InitialStateEmployee, { payload }) => {
+      state.isLoading = false;
+      console.log(payload);
+      if (payload)
+        state.entities = state.entities.map(employee =>
+          employee.id === payload.id ? { ...employee, ...payload } : employee
+        );
+    });
+    builder.addCase(updateEmployee.rejected, setRejected);
     builder.addCase(deleteEmployee.pending, setPending);
     builder.addCase(deleteEmployee.fulfilled, (state: InitialStateEmployee, { payload }) => {
       state.isLoading = false;

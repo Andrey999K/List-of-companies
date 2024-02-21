@@ -1,8 +1,8 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import employeeList from "../mock/employeeList.json";
-import httpService from "../services/http.services.ts";
 import isDev from "../utils/isDev.ts";
 import { Employee, InitialState, Request } from "../types/types.ts";
+import employeeService from "../services/employee.services.ts";
 
 type InitialStateEmployee = InitialState<Employee[]>;
 
@@ -10,19 +10,35 @@ type State = {
   employee: InitialStateEmployee;
 };
 
-export const requestEmployeeList = createAsyncThunk("employeeList/request", async (_, { rejectWithValue }) => {
-  try {
-    const { result } = (await httpService.get("employees")) as Request<Employee[]>;
-    if (result.status === "200") return result.data;
-    return [];
-  } catch (error: any) {
-    if (isDev()) {
-      console.log(error);
-      return employeeList as Employee[];
+type queryParamsGetEmployee = {
+  employeeId?: number;
+  companyId?: number;
+};
+
+export const requestEmployeeList = createAsyncThunk(
+  "employeeList/request",
+  async (payload: queryParamsGetEmployee, { rejectWithValue }) => {
+    try {
+      const data = payload ? await employeeService.get(payload) : await employeeService.get();
+      const { result } = data as Request<Employee[] | Employee>;
+      if (result.status === "200") return result?.data;
+      return [];
+    } catch (error: any) {
+      if (isDev()) {
+        console.log(error);
+        if (payload?.companyId || payload?.employeeId) {
+          const { companyId, employeeId } = payload;
+          return employeeList.filter(employee => {
+            if (companyId && employeeId) return employee.companyId === companyId && employee.id === employeeId;
+            return companyId ? employee.companyId === companyId : employee.id === employeeId;
+          });
+        }
+        return employeeList as Employee[];
+      }
+      return rejectWithValue(error.message);
     }
-    return rejectWithValue(error.message);
   }
-});
+);
 
 const setPending = (state: InitialStateEmployee) => {
   state.isLoading = true;
@@ -48,7 +64,8 @@ const employeeSlice = createSlice({
     builder.addCase(requestEmployeeList.pending, setPending);
     builder.addCase(requestEmployeeList.fulfilled, (state: InitialStateEmployee, { payload }) => {
       state.isLoading = false;
-      if (payload) state.entities = payload;
+      console.log(payload);
+      if (payload) state.entities = Array.isArray(payload) ? payload : [payload];
     });
     builder.addCase(requestEmployeeList.rejected, setRejected);
   }
@@ -56,7 +73,14 @@ const employeeSlice = createSlice({
 
 const { reducer: employeeReducer } = employeeSlice;
 
-export const getEmployeeList = () => (state: State) => state.employee.entities;
+export const getEmployeeList =
+  (companyId?: number) =>
+  (state: State): Array<Employee> => {
+    return companyId
+      ? state.employee.entities.filter(employee => employee.companyId === companyId)
+      : state.employee.entities;
+  };
+
 export const getEmployeeLoading = () => (state: State) => state.employee.isLoading;
 
 export default employeeReducer;

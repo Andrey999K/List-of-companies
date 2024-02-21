@@ -1,9 +1,11 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import isDev from "../utils/isDev.ts";
 import companyReducer from "./companySlicer.ts";
+import employeeReducer from "./employeeSlicer.ts";
 
 const rootReducer = combineReducers({
-  company: companyReducer
+  company: companyReducer,
+  employee: employeeReducer
 });
 
 const store = configureStore({

@@ -26,13 +26,8 @@ export type InitialState<T> = {
 
 export type ObjectDefault = { [id: string]: string | number | boolean };
 
-export type UpdatedFieldsItem<T> = Pick<T, keyof Omit<T, "id">>;
+export type UpdatedFieldsItem<T> = Pick<Partial<T>, keyof Omit<T, "id">>;
 
 export type UpdatedFields<T> = Pick<Partial<T>, keyof T>;
 
-export type UpdatedFieldsCompany = UpdatedFieldsItem<Company>;
-
-export type UpdatedFieldsEmployee = UpdatedFieldsItem<Employee>;
-
-// export type UpdatedItemData<T extends { id: number }> = UpdatedFields<T> & Pick<T, "id"> & UpdatedFieldsItem<T>;
-export type UpdatedItemData<T extends { id: number }> = Pick<T, "id"> & UpdatedFields<T>;
+export type UpdatedItemData<T extends Pick<T, "id">> = Pick<T, "id"> & UpdatedFields<T>;

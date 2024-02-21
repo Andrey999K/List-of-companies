@@ -40,6 +40,20 @@ export const requestEmployeeList = createAsyncThunk(
   }
 );
 
+export const deleteEmployee = createAsyncThunk("employeeList/delete", async (payload: number, { rejectWithValue }) => {
+  try {
+    const data = payload ? await employeeService.delete({ employeeId: payload }) : await employeeService.get();
+    const { result } = data as Request<Employee>;
+    if (result.status === "200") return result.data?.id;
+  } catch (error: any) {
+    if (isDev()) {
+      console.log(error);
+      return payload;
+    }
+    return rejectWithValue(error.message);
+  }
+});
+
 const setPending = (state: InitialStateEmployee) => {
   state.isLoading = true;
   state.error = null;
@@ -68,6 +82,12 @@ const employeeSlice = createSlice({
       if (payload) state.entities = Array.isArray(payload) ? payload : [payload];
     });
     builder.addCase(requestEmployeeList.rejected, setRejected);
+    builder.addCase(deleteEmployee.pending, setPending);
+    builder.addCase(deleteEmployee.fulfilled, (state: InitialStateEmployee, { payload }) => {
+      state.isLoading = false;
+      if (payload) state.entities = state.entities.filter(employee => employee.id !== payload);
+    });
+    builder.addCase(deleteEmployee.rejected, setRejected);
   }
 });
 

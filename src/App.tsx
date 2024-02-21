@@ -1,18 +1,20 @@
 import { getCompanyList } from "./store/companySlicer.ts";
 import AppLoader from "./hoc/AppLoader.tsx";
-import { useAppDispatch, useAppSelector } from "./store/hooks.ts";
+import { useAppSelector } from "./store/hooks.ts";
+import { getEmployeeList } from "./store/employeeSlicer.ts";
 import { useState } from "react";
-import { getEmployeeList, requestEmployeeList } from "./store/employeeSlicer.ts";
 import { Employee } from "./types/types.ts";
 
 function App() {
   const companyList = useAppSelector(getCompanyList());
   const employeeList = useAppSelector(getEmployeeList());
-  const dispatch = useAppDispatch();
+  const [currentCompanyEmployees, setCurrentCompanyEmployees] = useState<Employee[]>([]);
 
   const handlerClickCompany = (companyId: number) => {
-    dispatch(requestEmployeeList({ companyId }));
+    setCurrentCompanyEmployees(employeeList.filter(employee => employee.companyId === companyId));
   };
+
+  const handlerDeleteEmployee = () => {};
 
   return (
     <AppLoader>
@@ -24,17 +26,19 @@ function App() {
                 <input type="checkbox" onChange={() => handlerClickCompany(company.id)} />
               </div>
               <div>{company.name}</div>
+              <div>{employeeList.filter(employee => employee.companyId === company.id).length}</div>
             </div>
           ))}
         </div>
         <div className="w-full flex justify-center items-center flex-col">
-          {!!employeeList.length ? (
+          {!!currentCompanyEmployees.length ? (
             <div>
-              <span>Найдено {employeeList.length} пользователей.</span>
-              {employeeList.map(employee => (
+              <span>Найдено {currentCompanyEmployees.length} пользователей.</span>
+              {currentCompanyEmployees.map(employee => (
                 <div key={employee.id} className="flex items-center gap-2">
                   <input type="checkbox" />
                   <div>{employee.name}</div>
+                  <button onClick={() => handlerDeleteEmployee}>Удалить</button>
                 </div>
               ))}
             </div>

@@ -2,7 +2,7 @@ import httpService from "./http.services.ts";
 import convertQueryParams from "../utils/convertQueryParams.ts";
 import { ObjectDefault } from "../types/types.ts";
 
-const botMessagesEndPoint = "category";
+const botMessagesEndPoint = "company";
 
 const companyService = {
   get: async (body?: ObjectDefault) => {

@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks.ts";
 import { getCompanyLoading, requestCompanyList } from "../store/companySlicer.ts";
 import ScreenLoader from "../components/ui/ScreenLoader";
+import { requestEmployeeList } from "../store/employeeSlicer.ts";
 
 const AppLoader = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -9,6 +10,7 @@ const AppLoader = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     dispatch(requestCompanyList());
+    dispatch(requestEmployeeList(null));
   }, []);
 
   if (isLoading) {

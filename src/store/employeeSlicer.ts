@@ -17,7 +17,7 @@ type queryParamsGetEmployee = {
 
 export const requestEmployeeList = createAsyncThunk(
   "employeeList/request",
-  async (payload: queryParamsGetEmployee, { rejectWithValue }) => {
+  async (payload: queryParamsGetEmployee | null, { rejectWithValue }) => {
     try {
       const data = payload ? await employeeService.get(payload) : await employeeService.get();
       const { result } = data as Request<Employee[] | Employee>;

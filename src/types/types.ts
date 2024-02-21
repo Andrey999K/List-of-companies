@@ -25,3 +25,5 @@ export type InitialState<T> = {
 };
 
 export type ObjectDefault = { [id: string]: string | number | boolean };
+
+export type UpdatedFieldsCompany = Pick<Company, keyof Omit<Company, "id">>;

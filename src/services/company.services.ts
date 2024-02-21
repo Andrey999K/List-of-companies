@@ -11,11 +11,11 @@ const companyService = {
       : await httpService.get(botMessagesEndPoint);
     return data;
   },
-  post: async (body: ObjectDefault) => {
+  post: async (body: Object) => {
     const { data } = await httpService.post(botMessagesEndPoint, body);
     return data;
   },
-  patch: async (body: ObjectDefault, config: Object) => {
+  patch: async (body: Object, config?: Object) => {
     const { data } = config
       ? await httpService.put(botMessagesEndPoint, body, config)
       : await httpService.put(botMessagesEndPoint, body);

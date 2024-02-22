@@ -4,6 +4,7 @@ import { getCompanyList, updateCompany } from "../../../../store/companySlicer.t
 import { getEmployeeList } from "../../../../store/employeeSlicer.ts";
 import TextField from "../../../common/TextField";
 import { Company } from "../../../../types/types.ts";
+import includesItem from "../../../../utils/includesItem.ts";
 
 interface TableInterface {
   selectedCompany: Company[];
@@ -29,10 +30,9 @@ const CompaniesTable = ({ selectedCompany, setSelectedCompany }: TableInterface)
     if (e.target.checked) setSelectedCompany(companyList);
     else setSelectedCompany([]);
   };
-  const includesItem = <T extends { id: number }>(mass: Array<T>, item: T): boolean => mass.some(c => c.id === item.id);
   return (
     <div className="flex flex-col divide-y-[1px] divide-black/50 w-full max-w-[40%]">
-      <div className="flex items-center gap-2 w-full">
+      <div className="flex items-center gap-2 w-full my-4 px-3">
         <input type="checkbox" onChange={handlerSelectAllItems} />
         <div className="w-1/4 font-bold">Название</div>
         <div className="w-1/4 font-bold">Сотрудники</div>
@@ -41,7 +41,7 @@ const CompaniesTable = ({ selectedCompany, setSelectedCompany }: TableInterface)
       {companyList.map(company => (
         <div
           key={company.id}
-          className={`duration-100 flex items-center py-2 gap-2${
+          className={`duration-100 px-3 flex items-center py-2 gap-2${
             includesItem(selectedCompany, company) ? " bg-green-400" : ""
           }`}
         >

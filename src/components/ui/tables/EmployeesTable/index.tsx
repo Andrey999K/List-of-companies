@@ -5,6 +5,7 @@ import TextField from "../../../common/TextField";
 import React, { useState } from "react";
 import paginate from "../../../../utils/paginate.ts";
 import Icon from "../../../common/Icon";
+import includesItem from "../../../../utils/includesItem.ts";
 
 interface EmployeesTableInterface {
   selectedCompany: number | null;
@@ -39,45 +40,52 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
       {!!selectedCompany ? (
         <div className="h-full w-full">
           <span>Найдено {findEmployees.length} пользователей.</span>
-          <div className="flex items-center gap-2 w-full">
-            <input type="checkbox" onChange={handlerSelectAllItems} />
-            <div className="w-1/4 font-bold">Возраст</div>
-            <div className="w-1/4 font-bold">Фамилия</div>
-            <div className="w-1/4 font-bold">Имя</div>
-            <div className="w-1/4 font-bold">Должность</div>
-            <div className="w-1/4"></div>
-          </div>
-          {currentItems.map(employee => (
-            <div key={employee.id} className="flex items-center gap-2 w-full">
-              {Object.keys(employee).map(field => {
-                if (field === "id")
-                  return (
-                    <div key={employee.id}>
-                      <input
-                        type="checkbox"
-                        checked={selectedItem.some(c => c.id === employee.id)}
-                        onChange={e => handlerSelectItem(e, employee)}
-                      />
-                    </div>
-                  );
-                else if (field !== "companyId")
-                  return (
-                    <div key={field} className="w-1/4">
-                      <TextField
-                        value={employee[field as keyof Employee].toString()}
-                        name={field}
-                        onChange={handlerChange}
-                        id={employee.id}
-                        className="w-full"
-                      />
-                    </div>
-                  );
-              })}
-              <div className="w-1/4">
-                <button onClick={() => handlerDeleteEmployee(employee.id)}>Удалить</button>
-              </div>
+          <div className="flex flex-col divide-y-[1px] divide-black/50">
+            <div className="flex items-center gap-2 w-full my-5 px-3">
+              <input type="checkbox" onChange={handlerSelectAllItems} />
+              <div className="w-1/4 font-bold">Возраст</div>
+              <div className="w-1/4 font-bold">Фамилия</div>
+              <div className="w-1/4 font-bold">Имя</div>
+              <div className="w-1/4 font-bold">Должность</div>
+              <div className="w-1/4"></div>
             </div>
-          ))}
+            {currentItems.map(employee => (
+              <div
+                key={employee.id}
+                className={`px-3 duration-100 flex items-center gap-2 py-2 w-full${
+                  includesItem(selectedItem, employee) ? " bg-amber-400" : ""
+                }`}
+              >
+                {Object.keys(employee).map(field => {
+                  if (field === "id")
+                    return (
+                      <div key={employee.id}>
+                        <input
+                          type="checkbox"
+                          checked={includesItem(selectedItem, employee)}
+                          onChange={e => handlerSelectItem(e, employee)}
+                        />
+                      </div>
+                    );
+                  else if (field !== "companyId")
+                    return (
+                      <div key={field} className="w-1/4">
+                        <TextField
+                          value={employee[field as keyof Employee].toString()}
+                          name={field}
+                          onChange={handlerChange}
+                          id={employee.id}
+                          className="w-full"
+                        />
+                      </div>
+                    );
+                })}
+                <div className="w-1/4">
+                  <button onClick={() => handlerDeleteEmployee(employee.id)}>Удалить</button>
+                </div>
+              </div>
+            ))}
+          </div>
           <div className="flex items-center justify-between mt-5">
             <div className="flex items-center">
               <button onClick={() => setCurrentPage(1)}>

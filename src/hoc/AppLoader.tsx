@@ -13,11 +13,12 @@ const AppLoader = ({ children }: { children: React.ReactNode }) => {
     dispatch(requestEmployeeList(null));
   }, []);
 
-  if (isLoading) {
-    return <ScreenLoader />;
-  }
-
-  return <div>{children}</div>;
+  return (
+    <div>
+      {isLoading && <ScreenLoader />}
+      {children}
+    </div>
+  );
 };
 
 export default AppLoader;

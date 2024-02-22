@@ -96,14 +96,12 @@ const employeeSlice = createSlice({
     builder.addCase(requestEmployeeList.pending, setPending);
     builder.addCase(requestEmployeeList.fulfilled, (state: InitialStateEmployee, { payload }) => {
       state.isLoading = false;
-      console.log(payload);
       if (payload) state.entities = Array.isArray(payload) ? payload : [payload];
     });
     builder.addCase(requestEmployeeList.rejected, setRejected);
     builder.addCase(updateEmployee.pending, setPending);
     builder.addCase(updateEmployee.fulfilled, (state: InitialStateEmployee, { payload }) => {
       state.isLoading = false;
-      console.log(payload);
       if (payload)
         state.entities = state.entities.map(employee =>
           employee.id === payload.id ? { ...employee, ...payload } : employee

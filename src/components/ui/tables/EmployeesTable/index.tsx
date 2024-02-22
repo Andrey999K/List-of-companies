@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import Icon from "../../../common/Icon";
 import includesItem from "../../../../utils/includesItem.ts";
 import usePaginate from "../../../../hooks/usePaginate.tsx";
+import Button from "../../../common/Button";
 
 interface EmployeesTableInterface {
   selectedCompany: number | null;
@@ -18,9 +19,9 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
   const { currentItems, prevPage, nextPage, handleEditCountPage, currentPage, setCurrentPage, pageSize, countPages } =
     usePaginate(1, 10, findEmployees);
   const [selectedItem, setSelectedItem] = useState<Employee[]>([]);
-  const handlerDeleteEmployee = (employeeId: number) => dispatch(deleteEmployee(employeeId));
-  const handlerChange = (id: number, name: string, value: string) => {
-    dispatch(updateEmployee({ id, [name]: value }));
+  const handlerDeleteEmployee = (employeeId: number) => dispatch(deleteEmployee({ employeeId }));
+  const handlerChange = (name: string, value: string, id?: number) => {
+    if (id) dispatch(updateEmployee({ id, [name]: value }));
   };
   const handlerSelectAllItems = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) setSelectedItem(findEmployees);
@@ -32,7 +33,7 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
   };
   return (
     <div className="w-full flex justify-center items-center flex-col">
-      {!!selectedCompany ? (
+      {!!selectedCompany && findEmployees.length ? (
         <div className="h-full w-full">
           <span>Найдено {findEmployees.length} пользователей.</span>
           <div className="flex flex-col divide-y-[1px] divide-black/50">
@@ -75,8 +76,10 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
                       </div>
                     );
                 })}
-                <div className="w-1/4">
-                  <button onClick={() => handlerDeleteEmployee(employee.id)}>Удалить</button>
+                <div className="w-1/4 flex items-center justify-end">
+                  <Button className="bg-red-500 w-10" onClick={() => handlerDeleteEmployee(employee.id)}>
+                    -
+                  </Button>
                 </div>
               </div>
             ))}

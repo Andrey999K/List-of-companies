@@ -1,35 +1,23 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import AppLoader from "./hoc/AppLoader.tsx";
+import { useState } from "react";
+import CompaniesTable from "./components/ui/tables/CompaniesTable";
+import EmployeesTable from "./components/ui/tables/EmployeesTable";
+import { Company } from "./types/types.ts";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [selectedCompany, setSelectedCompany] = useState<Company[]>([]);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <AppLoader>
+      <ToastContainer className="z-[9999]" />
+      <div className="w-full max-w-screen-2xl mx-auto mt-5 flex gap-10">
+        <CompaniesTable selectedCompany={selectedCompany} setSelectedCompany={setSelectedCompany} />
+        {selectedCompany.length === 1 && <EmployeesTable selectedCompany={selectedCompany[0].id} />}
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </AppLoader>
+  );
 }
 
-export default App
+export default App;

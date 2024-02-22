@@ -1,6 +1,7 @@
 import { deleteEmployee, getEmployeeList, updateEmployee } from "../../../../store/employeeSlicer.ts";
-import { Employee, UpdatedFieldsItem } from "../../../../types/types.ts";
+import { Employee } from "../../../../types/types.ts";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks.ts";
+import TextField from "../../../common/TextField";
 
 interface EmployeesTableInterface {
   selectedCompany: number | null;
@@ -11,8 +12,8 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
   const dispatch = useAppDispatch();
   const findEmployees = employeeList.filter(employee => employee.companyId === selectedCompany);
   const handlerDeleteEmployee = (employeeId: number) => dispatch(deleteEmployee(employeeId));
-  const handlerEditEmployee = (employeeId: number, data: UpdatedFieldsItem<Employee>) => {
-    dispatch(updateEmployee({ id: employeeId, ...data }));
+  const handlerChange = (id: number, name: string, value: string) => {
+    dispatch(updateEmployee({ id, [name]: value }));
   };
   return (
     <div className="w-full flex justify-center items-center flex-col">
@@ -21,9 +22,16 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
           <span>Найдено {findEmployees.length} пользователей.</span>
           {findEmployees.map(employee => (
             <div key={employee.id} className="flex items-center gap-2">
-              <input type="checkbox" />
-              <div>{employee.name}</div>
-              <button onClick={() => handlerEditEmployee(employee.id, { name: "Sibl" })}>Изменить</button>
+              {Object.keys(employee).map(field => (
+                <div key={field}>
+                  <TextField
+                    value={employee[field as keyof Employee].toString()}
+                    name={field}
+                    onChange={handlerChange}
+                    id={employee.id}
+                  />
+                </div>
+              ))}
               <button onClick={() => handlerDeleteEmployee(employee.id)}>Удалить</button>
             </div>
           ))}

@@ -2,6 +2,7 @@ import AppLoader from "./hoc/AppLoader.tsx";
 import { useState } from "react";
 import CompaniesTable from "./components/ui/tables/CompaniesTable";
 import EmployeesTable from "./components/ui/tables/EmployeesTable";
+import Button from "./components/common/Button";
 
 function App() {
   const [selectedCompany, setSelectedCompany] = useState<number | null>(null);
@@ -12,6 +13,7 @@ function App() {
         <CompaniesTable setCompany={setSelectedCompany} />
         <EmployeesTable selectedCompany={selectedCompany} />
       </div>
+      <Button>+</Button>
     </AppLoader>
   );
 }

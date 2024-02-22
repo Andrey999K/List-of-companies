@@ -8,13 +8,15 @@ interface TextFieldInterface {
   className?: string;
   placeholder?: string;
   label?: string;
+  type?: string;
 }
 
-const TextField = ({ value, name, onChange, id, className, placeholder, label }: TextFieldInterface) => {
+const TextField = ({ value, name, onChange, id, className, placeholder, label, type }: TextFieldInterface) => {
   const [currentValue, setCurrentValue] = useState(value);
   const classes = "bg-transparent " + (className || "");
 
   const handlerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (type === "number" && /\D/.test(e.target.value)) return;
     setCurrentValue(e.target.value);
   };
 

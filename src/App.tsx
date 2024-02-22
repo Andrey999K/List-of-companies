@@ -14,7 +14,7 @@ function App() {
 
   return (
     <AppLoader>
-      <div className="w-full max-w-screen-xl mx-auto mt-5 flex gap-10">
+      <div className="w-full max-w-screen-2xl mx-auto mt-5 flex gap-10">
         <CompaniesTable selectedCompany={selectedCompany} setSelectedCompany={setSelectedCompany} />
         {selectedCompany.length === 1 && <EmployeesTable selectedCompany={selectedCompany[0].id} />}
       </div>

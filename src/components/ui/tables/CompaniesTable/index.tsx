@@ -16,6 +16,7 @@ const CompaniesTable = ({ selectedCompany, setSelectedCompany }: TableInterface)
     ...company,
     countEmployees: employeeList.filter(employee => employee.companyId === company.id).length
   }));
+  console.log(companyList);
   const dispatch = useAppDispatch();
   const handlerSelectCompany = (e: React.ChangeEvent<HTMLInputElement>, company: Company) => {
     if (e.target.checked) setSelectedCompany(prevState => [...prevState, company]);
@@ -29,10 +30,12 @@ const CompaniesTable = ({ selectedCompany, setSelectedCompany }: TableInterface)
     else setSelectedCompany([]);
   };
   return (
-    <div className="flex flex-col gap-2 divide-y-[1px] divide-black/50">
+    <div className="flex flex-col gap-2 divide-y-[1px] divide-black/50 w-full max-w-[40%]">
       <div className="flex items-center gap-2 w-full">
         <input type="checkbox" onChange={handlerSelectAllItems} />
         <div className="w-1/4 font-bold">Название</div>
+        <div className="w-1/4 font-bold">Сотрудники</div>
+        <div className="w-1/4 font-bold">Адрес</div>
       </div>
       {companyList.map(company => (
         <div key={company.id} className="flex items-center gap-2">
@@ -47,6 +50,7 @@ const CompaniesTable = ({ selectedCompany, setSelectedCompany }: TableInterface)
             <TextField value={company.name} name="name" onChange={handlerChange} id={company.id} />
           </div>
           <div>{company.countEmployees}</div>
+          <div>{company.address}</div>
         </div>
       ))}
     </div>

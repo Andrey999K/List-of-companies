@@ -7,6 +7,7 @@ import Icon from "../../../common/Icon";
 import includesItem from "../../../../utils/includesItem.ts";
 import usePaginate from "../../../../hooks/usePaginate.tsx";
 import Button from "../../../common/Button";
+import AddCompanyModal from "../../AddCompanyModal";
 
 interface EmployeesTableInterface {
   selectedCompany: number | null;
@@ -30,6 +31,10 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
   const handlerSelectItem = (e: React.ChangeEvent<HTMLInputElement>, employee: Employee) => {
     if (e.target.checked) setSelectedItem(prevState => [...prevState, employee]);
     else setSelectedItem(prevState => prevState.filter(item => item.id !== employee.id));
+  };
+  const handlerDeleteSelected = () => {
+    setSelectedItem([]);
+    dispatch(deleteEmployee({ employeeId: selectedItem.map(employee => employee.id) }));
   };
   return (
     <div className="w-full flex justify-center items-center flex-col">
@@ -120,6 +125,11 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
       ) : (
         <h2>Пользователей не найдено!</h2>
       )}
+      <div className="mt-2 flex items-center justify-start gap-3">
+        <Button className="w-10 bg-red-500" onClick={handlerDeleteSelected}>
+          -
+        </Button>
+      </div>
     </div>
   );
 };

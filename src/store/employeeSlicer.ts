@@ -131,6 +131,7 @@ const employeeSlice = createSlice({
     builder.addCase(deleteEmployee.pending, setPending);
     builder.addCase(deleteEmployee.fulfilled, (state: InitialStateEmployee, { payload }) => {
       state.isLoading = false;
+      console.log(payload);
       if (payload) {
         if ("employeeId" in payload) {
           state.entities = state.entities.filter(employee => {

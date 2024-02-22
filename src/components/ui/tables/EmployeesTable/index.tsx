@@ -7,7 +7,7 @@ import Icon from "../../../common/Icon";
 import includesItem from "../../../../utils/includesItem.ts";
 import usePaginate from "../../../../hooks/usePaginate.tsx";
 import Button from "../../../common/Button";
-import AddCompanyModal from "../../AddCompanyModal";
+import AddEmployeeModal from "../../AddEmployeeModal";
 
 interface EmployeesTableInterface {
   selectedCompany: number | null;
@@ -126,6 +126,7 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
         <h2>Пользователей не найдено!</h2>
       )}
       <div className="mt-2 flex items-center justify-start gap-3">
+        <AddEmployeeModal />
         <Button className="w-10 bg-red-500" onClick={handlerDeleteSelected}>
           -
         </Button>

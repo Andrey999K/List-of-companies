@@ -10,6 +10,7 @@ interface TextFieldInterface {
 
 const TextField = ({ value, name, onChange, id, className }: TextFieldInterface) => {
   const [currentValue, setCurrentValue] = useState(value);
+  const classes = "bg-transparent " + (className || "");
 
   const handlerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setCurrentValue(e.target.value);
@@ -21,7 +22,7 @@ const TextField = ({ value, name, onChange, id, className }: TextFieldInterface)
 
   return (
     <input
-      className={className || ""}
+      className={classes}
       type="text"
       value={currentValue}
       name={name}

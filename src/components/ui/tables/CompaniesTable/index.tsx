@@ -29,8 +29,9 @@ const CompaniesTable = ({ selectedCompany, setSelectedCompany }: TableInterface)
     if (e.target.checked) setSelectedCompany(companyList);
     else setSelectedCompany([]);
   };
+  const includesItem = <T extends { id: number }>(mass: Array<T>, item: T): boolean => mass.some(c => c.id === item.id);
   return (
-    <div className="flex flex-col gap-2 divide-y-[1px] divide-black/50 w-full max-w-[40%]">
+    <div className="flex flex-col divide-y-[1px] divide-black/50 w-full max-w-[40%]">
       <div className="flex items-center gap-2 w-full">
         <input type="checkbox" onChange={handlerSelectAllItems} />
         <div className="w-1/4 font-bold">Название</div>
@@ -38,11 +39,16 @@ const CompaniesTable = ({ selectedCompany, setSelectedCompany }: TableInterface)
         <div className="w-1/4 font-bold">Адрес</div>
       </div>
       {companyList.map(company => (
-        <div key={company.id} className="flex items-center gap-2">
+        <div
+          key={company.id}
+          className={`duration-100 flex items-center py-2 gap-2${
+            includesItem(selectedCompany, company) ? " bg-green-400" : ""
+          }`}
+        >
           <div>
             <input
               type="checkbox"
-              checked={selectedCompany.some(c => c.id === company.id)}
+              checked={includesItem(selectedCompany, company)}
               onChange={e => handlerSelectCompany(e, company)}
             />
           </div>

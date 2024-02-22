@@ -3,9 +3,9 @@ import { Employee } from "../../../../types/types.ts";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks.ts";
 import TextField from "../../../common/TextField";
 import React, { useState } from "react";
-import paginate from "../../../../utils/paginate.ts";
 import Icon from "../../../common/Icon";
 import includesItem from "../../../../utils/includesItem.ts";
+import usePaginate from "../../../../hooks/usePaginate.tsx";
 
 interface EmployeesTableInterface {
   selectedCompany: number | null;
@@ -15,18 +15,13 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
   const employeeList = useAppSelector(getEmployeeList());
   const dispatch = useAppDispatch();
   const findEmployees = employeeList.filter(employee => employee.companyId === selectedCompany);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const countPages = Math.ceil(findEmployees.length / pageSize);
-  const currentItems = paginate(findEmployees, currentPage, pageSize);
+  const { currentItems, prevPage, nextPage, handleEditCountPage, currentPage, setCurrentPage, pageSize, countPages } =
+    usePaginate(1, 10, findEmployees);
   const [selectedItem, setSelectedItem] = useState<Employee[]>([]);
   const handlerDeleteEmployee = (employeeId: number) => dispatch(deleteEmployee(employeeId));
   const handlerChange = (id: number, name: string, value: string) => {
     dispatch(updateEmployee({ id, [name]: value }));
   };
-  const handleEditCountPage = (e: React.ChangeEvent<HTMLSelectElement>) => setPageSize(Number(e.target.value));
-  const prevPage = () => (currentPage !== 1 ? setCurrentPage(prevState => prevState - 1) : "");
-  const nextPage = () => (currentPage !== countPages ? setCurrentPage(prevState => prevState + 1) : "");
   const handlerSelectAllItems = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) setSelectedItem(findEmployees);
     else setSelectedItem([]);

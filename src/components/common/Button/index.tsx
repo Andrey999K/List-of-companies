@@ -1,11 +1,18 @@
-import React from "react";
+import React, { ButtonHTMLAttributes } from "react";
 
-interface ButtonInterface {
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
+  className?: string;
 }
 
-const Button = ({ children }: ButtonInterface) => {
-  return <button className="p-5 rounded bg-green-400">{children}</button>;
+const Button = ({ children, className, ...attr }: ButtonProps) => {
+  const classes =
+    "rounded bg-green-400 text-white font-bold h-10 flex items-center justify-center " + (className || "");
+  return (
+    <button className={classes} {...attr}>
+      {children}
+    </button>
+  );
 };
 
 export default Button;

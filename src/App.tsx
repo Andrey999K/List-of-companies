@@ -1,51 +1,20 @@
-import { getCompanyList } from "./store/companySlicer.ts";
 import AppLoader from "./hoc/AppLoader.tsx";
-import { useAppSelector } from "./store/hooks.ts";
-import { getEmployeeList } from "./store/employeeSlicer.ts";
 import { useState } from "react";
-import { Employee } from "./types/types.ts";
+import CompaniesTable from "./components/ui/tables/CompaniesTable";
+import EmployeesTable from "./components/ui/tables/EmployeesTable";
+import { Company } from "./types/types.ts";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
 
 function App() {
-  const companyList = useAppSelector(getCompanyList());
-  const employeeList = useAppSelector(getEmployeeList());
-  const [currentCompanyEmployees, setCurrentCompanyEmployees] = useState<Employee[]>([]);
-
-  const handlerClickCompany = (companyId: number) => {
-    setCurrentCompanyEmployees(employeeList.filter(employee => employee.companyId === companyId));
-  };
-
-  const handlerDeleteEmployee = () => {};
+  const [selectedCompany, setSelectedCompany] = useState<Company[]>([]);
 
   return (
     <AppLoader>
-      <div className="w-full max-w-screen-xl mx-auto mt-5 flex gap-10">
-        <div className="flex flex-col gap-2 divide-y-[1px] divide-black/50 w-full">
-          {companyList.map(company => (
-            <div key={company.id} className="flex items-center gap-2">
-              <div>
-                <input type="checkbox" onChange={() => handlerClickCompany(company.id)} />
-              </div>
-              <div>{company.name}</div>
-              <div>{employeeList.filter(employee => employee.companyId === company.id).length}</div>
-            </div>
-          ))}
-        </div>
-        <div className="w-full flex justify-center items-center flex-col">
-          {!!currentCompanyEmployees.length ? (
-            <div>
-              <span>Найдено {currentCompanyEmployees.length} пользователей.</span>
-              {currentCompanyEmployees.map(employee => (
-                <div key={employee.id} className="flex items-center gap-2">
-                  <input type="checkbox" />
-                  <div>{employee.name}</div>
-                  <button onClick={() => handlerDeleteEmployee}>Удалить</button>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <h2>Пользователей не найдено!</h2>
-          )}
-        </div>
+      <ToastContainer className="z-[9999]" />
+      <div className="w-full max-w-screen-2xl mx-auto mt-5 flex gap-10">
+        <CompaniesTable selectedCompany={selectedCompany} setSelectedCompany={setSelectedCompany} />
+        {selectedCompany.length === 1 && <EmployeesTable selectedCompany={selectedCompany[0].id} />}
       </div>
     </AppLoader>
   );

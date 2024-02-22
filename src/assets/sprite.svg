@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="first" viewBox="0 0 24 24" fill="none">
+    <g>
+      <path d="M17.76 17.52L12 11.76L17.76 6" stroke="currentColor" stroke-width="1.44"
+            stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M6.23999 17.52V6" stroke="#8E8E93" stroke-width="1.44"
+            stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+  </symbol>
+  <symbol id="prev" viewBox="0 0 24 24" fill="none">
+    <g>
+      <path d="M14 17.52L8.24 11.76L14 6" stroke="currentColor" stroke-width="1.44"
+            stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+  </symbol>
+  <symbol id="next" viewBox="0 0 24 24" fill="none">
+    <g>
+      <path d="M10 17.52L15.76 11.76L10 6" stroke="currentColor" stroke-width="1.44"
+            stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+  </symbol>
+  <symbol id="last" viewBox="0 0 24 24" fill="none">
+    <g>
+      <path d="M6.23999 17.52L12 11.76L6.23999 6" stroke="currentColor" stroke-width="1.44"
+            stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M17.76 17.52V6" stroke="#8E8E93" stroke-width="1.44"
+            stroke-linecap="round" stroke-linejoin="round" />
+    </g>
+  </symbol>
+  <symbol id="close-circle" viewBox="0 0 30 30" fill="none">
+    <g>
+      <path d="M17.9939 11.9941L12.0039 17.9841" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+      <path d="M17.995 17.9865L12 11.9902" stroke="currentColor" stroke-width="1.5" stroke-linecap="square"/>
+      <path fill-rule="evenodd" clip-rule="evenodd" d="M15 26.5625C21.3858 26.5625 26.5625 21.3858 26.5625 15C26.5625 8.61421 21.3858 3.4375 15 3.4375C8.61421 3.4375 3.4375 8.61421 3.4375 15C3.4375 21.3858 8.61421 26.5625 15 26.5625Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    </g>
+  </symbol>
+</svg>

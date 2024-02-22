@@ -24,6 +24,19 @@ export const requestCompanyList = createAsyncThunk("companyList/request", async 
   }
 });
 
+export const addCompany = createAsyncThunk("company/add", async (payload: Omit<Company, "id">, { rejectWithValue }) => {
+  try {
+    const { result } = await companyService.post({ payload });
+    if (result.status === "200") return result.data as Company;
+  } catch (error: any) {
+    if (isDev()) {
+      console.log(error);
+      return payload;
+    }
+    return rejectWithValue(error.message);
+  }
+});
+
 export const updateCompany = createAsyncThunk(
   "company/update",
   async (payload: UpdatedItemData<Company>, { rejectWithValue }) => {
@@ -41,18 +54,26 @@ export const updateCompany = createAsyncThunk(
   }
 );
 
-export const deleteCompany = createAsyncThunk("company/delete", async (payload: number, { rejectWithValue }) => {
-  try {
-    const { result } = await companyService.delete({ companyId: payload });
-    if (result.status === "200") return result.data?.id;
-  } catch (error: any) {
-    if (isDev()) {
-      console.log(error);
-      return payload;
+export const deleteCompany = createAsyncThunk(
+  "company/delete",
+  async (payload: Company | Company[], { rejectWithValue }) => {
+    try {
+      if (Array.isArray(payload)) {
+        const { result } = await companyService.delete({ companyId: payload.map(company => company.id).join(", ") });
+        if (result.status === "200") return result.data;
+      } else {
+        const { result } = await companyService.delete({ companyId: payload.id });
+        if (result.status === "200") return result.data?.id;
+      }
+    } catch (error: any) {
+      if (isDev()) {
+        console.log(error);
+        return payload;
+      }
+      return rejectWithValue(error.message);
     }
-    return rejectWithValue(error.message);
   }
-});
+);
 
 const setPending = (state: InitialStateCompany) => {
   state.isLoading = true;
@@ -81,6 +102,19 @@ const companySlice = createSlice({
       if (payload) state.entities = payload;
     });
     builder.addCase(requestCompanyList.rejected, setRejected);
+    builder.addCase(addCompany.pending, setPending);
+    builder.addCase(addCompany.fulfilled, (state: InitialStateCompany, { payload }) => {
+      state.isLoading = false;
+      if (payload) {
+        if (state.entities.length) {
+          const lastId = state.entities[state.entities.length - 1].id;
+          state.entities = [...state.entities, { id: lastId + 1, ...payload }];
+        } else {
+          state.entities = [{ id: 1, ...payload }];
+        }
+      }
+    });
+    builder.addCase(addCompany.rejected, setRejected);
     builder.addCase(updateCompany.pending, setPending);
     builder.addCase(updateCompany.fulfilled, (state: InitialStateCompany, { payload }) => {
       state.isLoading = false;
@@ -93,7 +127,10 @@ const companySlice = createSlice({
     builder.addCase(deleteCompany.pending, setPending);
     builder.addCase(deleteCompany.fulfilled, (state: InitialStateCompany, { payload }) => {
       state.isLoading = false;
-      if (payload) state.entities = state.entities.filter(company => company.id !== payload);
+      if (payload)
+        state.entities = state.entities.filter(
+          company => !payload.some((com: { id: number }) => com.id === company.id)
+        );
     });
     builder.addCase(deleteCompany.rejected, setRejected);
   }

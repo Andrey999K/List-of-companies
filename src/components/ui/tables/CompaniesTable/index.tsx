@@ -36,8 +36,9 @@ const CompaniesTable = ({ selectedCompany, setSelectedCompany }: TableInterface)
     else setSelectedCompany([]);
   };
   const handlerDeleteSelected = () => {
-    console.log(selectedCompany);
+    setSelectedCompany([]);
     dispatch(deleteCompany(selectedCompany));
+    dispatch(deleteEmployee({ companyId: selectedCompany.map(company => company.id) }));
   };
   return (
     <div className="flex flex-col w-full max-w-[40%]">

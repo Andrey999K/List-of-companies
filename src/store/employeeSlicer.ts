@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import employeeList from "../mock/employeeList.json";
 import isDev from "../utils/isDev.ts";
-import { Employee, InitialState, Request, UpdatedItemData } from "../types/types.ts";
+import { Employee, InitialState, PayloadNewEmployee, Request, UpdatedItemData } from "../types/types.ts";
 import employeeService from "../services/employee.services.ts";
 import companyService from "../services/company.services.ts";
 
@@ -35,6 +35,23 @@ export const requestEmployeeList = createAsyncThunk(
           });
         }
         return employeeList as Employee[];
+      }
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const addEmployee = createAsyncThunk(
+  "employee/add",
+  async (payload: PayloadNewEmployee, { rejectWithValue }) => {
+    try {
+      const { result } = await companyService.post({ payload });
+      if (result.status === "200") return result.data;
+      return null;
+    } catch (error: any) {
+      if (isDev()) {
+        console.log(error);
+        return payload;
       }
       return rejectWithValue(error.message);
     }
@@ -119,6 +136,19 @@ const employeeSlice = createSlice({
       if (payload) state.entities = Array.isArray(payload) ? payload : [payload];
     });
     builder.addCase(requestEmployeeList.rejected, setRejected);
+    builder.addCase(addEmployee.pending, setPending);
+    builder.addCase(
+      addEmployee.fulfilled,
+      (state: InitialStateEmployee, { payload }: { payload: PayloadNewEmployee }) => {
+        state.isLoading = false;
+        if (payload) {
+          const lastId = state.entities.length > 0 ? state.entities[state.entities.length - 1].id + 1 : 1;
+          const { companyId, age, ...data } = payload;
+          state.entities = [...state.entities, { id: lastId, companyId: Number(companyId), age: Number(age), ...data }];
+        }
+      }
+    );
+    builder.addCase(addEmployee.rejected, setRejected);
     builder.addCase(updateEmployee.pending, setPending);
     builder.addCase(updateEmployee.fulfilled, (state: InitialStateEmployee, { payload }) => {
       state.isLoading = false;
@@ -131,7 +161,6 @@ const employeeSlice = createSlice({
     builder.addCase(deleteEmployee.pending, setPending);
     builder.addCase(deleteEmployee.fulfilled, (state: InitialStateEmployee, { payload }) => {
       state.isLoading = false;
-      console.log(payload);
       if (payload) {
         if ("employeeId" in payload) {
           state.entities = state.entities.filter(employee => {

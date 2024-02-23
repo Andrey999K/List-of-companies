@@ -10,7 +10,7 @@ import Button from "../../../common/Button";
 import AddEmployeeModal from "../../AddEmployeeModal";
 
 interface EmployeesTableInterface {
-  selectedCompany: number | null;
+  selectedCompany: number;
 }
 
 const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
@@ -126,7 +126,7 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
         <h2>Пользователей не найдено!</h2>
       )}
       <div className="mt-2 flex items-center justify-start gap-3">
-        <AddEmployeeModal />
+        <AddEmployeeModal selectedCompany={selectedCompany} />
         <Button className="w-10 bg-red-500" onClick={handlerDeleteSelected}>
           -
         </Button>

@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import employeeList from "../mock/employeeList.json";
 import isDev from "../utils/isDev.ts";
-import { Employee, InitialState, Request, UpdatedItemData } from "../types/types.ts";
+import { Employee, InitialState, PayloadNewEmployee, Request, UpdatedItemData } from "../types/types.ts";
 import employeeService from "../services/employee.services.ts";
 import companyService from "../services/company.services.ts";
 
@@ -41,6 +41,23 @@ export const requestEmployeeList = createAsyncThunk(
   }
 );
 
+export const addEmployee = createAsyncThunk(
+  "employee/add",
+  async (payload: PayloadNewEmployee, { rejectWithValue }) => {
+    try {
+      const { result } = await companyService.post({ payload });
+      if (result.status === "200") return result.data;
+      return null;
+    } catch (error: any) {
+      if (isDev()) {
+        console.log(error);
+        return payload;
+      }
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
 export const updateEmployee = createAsyncThunk(
   "employee/update",
   async (payload: UpdatedItemData<Employee>, { rejectWithValue }) => {
@@ -58,19 +75,39 @@ export const updateEmployee = createAsyncThunk(
   }
 );
 
-export const deleteEmployee = createAsyncThunk("employee/delete", async (payload: number, { rejectWithValue }) => {
-  try {
-    const data = payload ? await employeeService.delete({ employeeId: payload }) : await employeeService.get();
-    const { result } = data;
-    if (result.status === "200") return result.data?.id;
-  } catch (error: any) {
-    if (isDev()) {
-      console.log(error);
-      return payload;
+export const deleteEmployee = createAsyncThunk(
+  "employee/delete",
+  async (
+    payload: { employeeId: number | Array<number> } | { companyId: number | Array<number> },
+    { rejectWithValue }
+  ) => {
+    try {
+      if ("employeeId" in payload) {
+        const data = await employeeService.delete(
+          Array.isArray(payload.employeeId)
+            ? { employeeId: payload.employeeId.join(", ") }
+            : { employeeId: payload.employeeId }
+        );
+        const { result } = data;
+        if (result.status === "200") return result.data?.id;
+      } else if ("companyId" in payload) {
+        const data = await employeeService.delete(
+          Array.isArray(payload.companyId)
+            ? { employeeId: payload.companyId.join(", ") }
+            : { employeeId: payload.companyId }
+        );
+        const { result } = data;
+        if (result.status === "200") return result.data;
+      }
+    } catch (error: any) {
+      if (isDev()) {
+        console.log(error);
+        return payload;
+      }
+      return rejectWithValue(error.message);
     }
-    return rejectWithValue(error.message);
   }
-});
+);
 
 const setPending = (state: InitialStateEmployee) => {
   state.isLoading = true;
@@ -99,6 +136,19 @@ const employeeSlice = createSlice({
       if (payload) state.entities = Array.isArray(payload) ? payload : [payload];
     });
     builder.addCase(requestEmployeeList.rejected, setRejected);
+    builder.addCase(addEmployee.pending, setPending);
+    builder.addCase(
+      addEmployee.fulfilled,
+      (state: InitialStateEmployee, { payload }: { payload: PayloadNewEmployee }) => {
+        state.isLoading = false;
+        if (payload) {
+          const lastId = state.entities.length > 0 ? state.entities[state.entities.length - 1].id + 1 : 1;
+          const { companyId, age, ...data } = payload;
+          state.entities = [...state.entities, { id: lastId, companyId: Number(companyId), age: Number(age), ...data }];
+        }
+      }
+    );
+    builder.addCase(addEmployee.rejected, setRejected);
     builder.addCase(updateEmployee.pending, setPending);
     builder.addCase(updateEmployee.fulfilled, (state: InitialStateEmployee, { payload }) => {
       state.isLoading = false;
@@ -111,7 +161,19 @@ const employeeSlice = createSlice({
     builder.addCase(deleteEmployee.pending, setPending);
     builder.addCase(deleteEmployee.fulfilled, (state: InitialStateEmployee, { payload }) => {
       state.isLoading = false;
-      if (payload) state.entities = state.entities.filter(employee => employee.id !== payload);
+      if (payload) {
+        if ("employeeId" in payload) {
+          state.entities = state.entities.filter(employee => {
+            if (Array.isArray(payload.employeeId)) return !payload.employeeId.includes(employee.id);
+            return employee.id !== payload.employeeId;
+          });
+        } else if ("companyId" in payload) {
+          state.entities = state.entities.filter(employee => {
+            if (Array.isArray(payload.companyId)) return !payload.companyId.includes(employee.companyId);
+            return employee.companyId !== payload.companyId;
+          });
+        }
+      }
     });
     builder.addCase(deleteEmployee.rejected, setRejected);
   }
@@ -126,7 +188,5 @@ export const getEmployeeList =
       ? state.employee.entities.filter(employee => employee.companyId === companyId)
       : state.employee.entities;
   };
-
-export const getEmployeeLoading = () => (state: State) => state.employee.isLoading;
 
 export default employeeReducer;

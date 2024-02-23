@@ -36,8 +36,9 @@ const CompaniesTable = ({ selectedCompany, setSelectedCompany }: TableInterface)
     else setSelectedCompany([]);
   };
   const handlerDeleteSelected = () => {
-    console.log(selectedCompany);
+    setSelectedCompany([]);
     dispatch(deleteCompany(selectedCompany));
+    dispatch(deleteEmployee({ companyId: selectedCompany.map(company => company.id) }));
   };
   return (
     <div className="flex flex-col w-full max-w-[40%]">
@@ -106,7 +107,7 @@ const CompaniesTable = ({ selectedCompany, setSelectedCompany }: TableInterface)
       ) : (
         <h2>Нет ни одной компании!</h2>
       )}
-      <div className="mt-2 flex items-center justify-start gap-3">
+      <div className="mt-2 flex items-center justify-center gap-3">
         <AddCompanyModal />
         <Button className="w-10 bg-red-500" onClick={handlerDeleteSelected}>
           -

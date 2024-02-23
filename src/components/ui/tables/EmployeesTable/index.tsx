@@ -6,9 +6,11 @@ import React, { useState } from "react";
 import Icon from "../../../common/Icon";
 import includesItem from "../../../../utils/includesItem.ts";
 import usePaginate from "../../../../hooks/usePaginate.tsx";
+import Button from "../../../common/Button";
+import AddEmployeeModal from "../../AddEmployeeModal";
 
 interface EmployeesTableInterface {
-  selectedCompany: number | null;
+  selectedCompany: number;
 }
 
 const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
@@ -18,9 +20,9 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
   const { currentItems, prevPage, nextPage, handleEditCountPage, currentPage, setCurrentPage, pageSize, countPages } =
     usePaginate(1, 10, findEmployees);
   const [selectedItem, setSelectedItem] = useState<Employee[]>([]);
-  const handlerDeleteEmployee = (employeeId: number) => dispatch(deleteEmployee(employeeId));
-  const handlerChange = (id: number, name: string, value: string) => {
-    dispatch(updateEmployee({ id, [name]: value }));
+  const handlerDeleteEmployee = (employeeId: number) => dispatch(deleteEmployee({ employeeId }));
+  const handlerChange = (name: string, value: string, id?: number) => {
+    if (id) dispatch(updateEmployee({ id, [name]: value }));
   };
   const handlerSelectAllItems = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) setSelectedItem(findEmployees);
@@ -30,9 +32,13 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
     if (e.target.checked) setSelectedItem(prevState => [...prevState, employee]);
     else setSelectedItem(prevState => prevState.filter(item => item.id !== employee.id));
   };
+  const handlerDeleteSelected = () => {
+    setSelectedItem([]);
+    dispatch(deleteEmployee({ employeeId: selectedItem.map(employee => employee.id) }));
+  };
   return (
     <div className="w-full flex justify-center items-center flex-col">
-      {!!selectedCompany ? (
+      {!!selectedCompany && findEmployees.length ? (
         <div className="h-full w-full">
           <span>Найдено {findEmployees.length} пользователей.</span>
           <div className="flex flex-col divide-y-[1px] divide-black/50">
@@ -75,8 +81,10 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
                       </div>
                     );
                 })}
-                <div className="w-1/4">
-                  <button onClick={() => handlerDeleteEmployee(employee.id)}>Удалить</button>
+                <div className="w-1/4 flex items-center justify-end">
+                  <Button className="bg-red-500 w-10" onClick={() => handlerDeleteEmployee(employee.id)}>
+                    -
+                  </Button>
                 </div>
               </div>
             ))}
@@ -117,6 +125,12 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
       ) : (
         <h2>Пользователей не найдено!</h2>
       )}
+      <div className="mt-2 flex items-center justify-start gap-3">
+        <AddEmployeeModal selectedCompany={selectedCompany} />
+        <Button className="w-10 bg-red-500" onClick={handlerDeleteSelected}>
+          -
+        </Button>
+      </div>
     </div>
   );
 };

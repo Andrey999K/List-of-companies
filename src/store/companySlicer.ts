@@ -24,21 +24,24 @@ export const requestCompanyList = createAsyncThunk("companyList/request", async 
   }
 });
 
-export const addCompany = createAsyncThunk("company/add", async (payload: Omit<Company, "id">, { rejectWithValue }) => {
-  try {
-    const { result } = await companyService.post({ payload });
-    if (result.status === "200") return result.data as Company;
-  } catch (error: any) {
-    if (isDev()) {
-      console.log(error);
-      return payload;
+export const addCompany = createAsyncThunk(
+  "companyId/add",
+  async (payload: Omit<Company, "id">, { rejectWithValue }) => {
+    try {
+      const { result } = await companyService.post({ payload });
+      if (result.status === "200") return result.data as Company;
+    } catch (error: any) {
+      if (isDev()) {
+        console.log(error);
+        return payload;
+      }
+      return rejectWithValue(error.message);
     }
-    return rejectWithValue(error.message);
   }
-});
+);
 
 export const updateCompany = createAsyncThunk(
-  "company/update",
+  "companyId/update",
   async (payload: UpdatedItemData<Company>, { rejectWithValue }) => {
     try {
       const { result } = (await companyService.patch({ payload })) as Request<Employee>;
@@ -55,7 +58,7 @@ export const updateCompany = createAsyncThunk(
 );
 
 export const deleteCompany = createAsyncThunk(
-  "company/delete",
+  "companyId/delete",
   async (payload: Company | Company[], { rejectWithValue }) => {
     try {
       if (Array.isArray(payload)) {

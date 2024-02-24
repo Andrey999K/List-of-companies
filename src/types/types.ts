@@ -32,7 +32,7 @@ export type UpdatedFieldsItem<T> = Pick<Partial<T>, keyof Omit<T, "id">>;
 
 export type UpdatedFields<T> = Pick<Partial<T>, keyof T>;
 
-export type UpdatedItemData<T extends Pick<T, "id">> = Pick<T, "id"> & UpdatedFields<T>;
+export type UpdatedItemData<T extends { id: number | string }> = Pick<T, "id"> & UpdatedFields<T>;
 
 export type PayloadNewEmployee = Omit<
   {

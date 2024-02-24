@@ -40,7 +40,7 @@ const EmployeesTable = ({ selectedCompany }: EmployeesTableInterface) => {
     <div className="w-full flex justify-center items-center flex-col">
       {!!selectedCompany && findEmployees.length ? (
         <div className="h-full w-full">
-          <span>Найдено {findEmployees.length} пользователей.</span>
+          <span>Найдено {findEmployees.length} сотрудников.</span>
           <div className="flex flex-col divide-y-[1px] divide-black/50">
             <div className="flex items-center gap-2 w-full my-5 px-3">
               <input type="checkbox" onChange={handlerSelectAllItems} />
